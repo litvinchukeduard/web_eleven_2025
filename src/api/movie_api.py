@@ -18,7 +18,7 @@ def create_movie(movie: MovieRequest, session: Session = Depends(open_session)):
     if db_movie is not None:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Movie with title: '{movie.title}' already exists")
 
-    movie_obj = Movie(title=movie.title)
+    movie_obj = Movie(title=movie.title, release_date=movie.release_date)
     session.add(movie_obj)
     session.commit()
     return MovieResponse.model_validate(movie_obj)

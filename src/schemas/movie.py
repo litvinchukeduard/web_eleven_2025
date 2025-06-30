@@ -1,8 +1,11 @@
+from datetime import date
+
 from pydantic import BaseModel, ConfigDict
 
 
 class MovieRequest(BaseModel):
     title: str
+    release_date: date
 
 
 class MovieResponse(BaseModel):
@@ -10,3 +13,4 @@ class MovieResponse(BaseModel):
 
     id: int
     title: str
+    release_date: date

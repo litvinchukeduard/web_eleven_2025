@@ -13,5 +13,6 @@ def add_rating(movie_id: int, rating: int, session: Session) -> MovieRating:
 SELECT avg(mr.movie_rating) FROM movie_ratings mr
 WHERE movie_id = 1;
 '''
+# TODO: !important Actually use select!
 def get_average_rating(movie_id: int, session: Session) -> float:
     return session.query(func.avg(MovieRating.movie_rating)).filter(MovieRating.movie_id == movie_id).scalar()

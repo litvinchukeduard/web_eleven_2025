@@ -27,3 +27,5 @@ src/
     |- movie.py
 main.py
 pyproject.toml
+
+Додати зберігання рейтингів для фільмів

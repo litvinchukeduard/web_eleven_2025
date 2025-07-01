@@ -4,6 +4,8 @@ from fastapi import Depends
 from sqlalchemy.orm import Session
 
 from src.schemas.movie import MovieRequest, MovieResponse
+from src.schemas.movie_rating import MovieRatingRequest
+from src.schemas.movie_rating import MovieRatingResponse
 from src.db.session import open_session
 from src.services import movie_service
 
@@ -18,8 +20,10 @@ def create_movie(movie: MovieRequest, session: Session = Depends(open_session)):
 # Get one Movie from db
 @router.get("/movies/{movie_id}", response_model=MovieResponse)
 def get_movie(movie_id: int, session: Session = Depends(open_session)):
-    movie_obj = movie_service.get_movie(movie_id, session)
-    return MovieResponse.model_validate(movie_obj)
+    movie_obj, avg_rating = movie_service.get_movie(movie_id, session)
+    movie_response = MovieResponse.model_validate(movie_obj)
+    movie_response.average_rating = avg_rating
+    return movie_response
 
 # Get all movies from db
 @router.get("/movies/", response_model=list[MovieResponse])
@@ -38,3 +42,8 @@ def update_movie(movie_id: int, movie: MovieRequest, session: Session = Depends(
 def delete_movie(movie_id: int, session: Session = Depends(open_session)):
     movie_service.delete_movie(movie_id, session)
     return {'message': f'Movie with id "{movie_id}" deleted successfully'}
+
+@router.post("/movies/{movie_id}/add_rating", response_model=MovieRatingResponse)
+def add_rating_to_movie(movie_id: int, movie_rating: MovieRatingRequest, session: Session = Depends(open_session)):
+    movie_rating = movie_service.add_movie_rating(movie_id, movie_rating.movie_rating, session)
+    return MovieRatingResponse.model_validate(movie_rating)

@@ -14,3 +14,4 @@ class MovieResponse(BaseModel):
     id: int
     title: str
     release_date: date
+    average_rating: float | None = None

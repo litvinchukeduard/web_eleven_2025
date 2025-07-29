@@ -9,11 +9,14 @@ from src.schemas.movie_rating import MovieRatingResponse
 from src.db.session import open_session
 from src.services import movie_service
 
+from src.security.oauth import get_current_active_admin, get_current_active_user
+from src.models import User
+
 router = APIRouter()
 
 # Create a Movie and store in db
 @router.post("/movies/", response_model=MovieResponse)
-def create_movie(movie: MovieRequest, session: Session = Depends(open_session)):
+def create_movie(movie: MovieRequest, session: Session = Depends(open_session), user: User = Depends(get_current_active_admin)):
     movie_obj = movie_service.create_movie(movie.title, movie.release_date, session)
     return MovieResponse.model_validate(movie_obj)
     
@@ -44,6 +47,6 @@ def delete_movie(movie_id: int, session: Session = Depends(open_session)):
     return {'message': f'Movie with id "{movie_id}" deleted successfully'}
 
 @router.post("/movies/{movie_id}/add_rating", response_model=MovieRatingResponse)
-def add_rating_to_movie(movie_id: int, movie_rating: MovieRatingRequest, session: Session = Depends(open_session)):
+def add_rating_to_movie(movie_id: int, movie_rating: MovieRatingRequest, session: Session = Depends(open_session), user: User = Depends(get_current_active_user)):
     movie_rating = movie_service.add_movie_rating(movie_id, movie_rating.movie_rating, session)
     return MovieRatingResponse.model_validate(movie_rating)

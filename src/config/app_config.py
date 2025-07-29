@@ -1,1 +1,2 @@
 DATABASE_CONNECT_URL = "sqlite:///movies_app.db"
+JWT_SECURE_KEY = "MY_SUPER_SECRET_KEY"

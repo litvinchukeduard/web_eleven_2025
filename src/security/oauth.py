@@ -8,21 +8,20 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 
 from src.models import User, UserRole
-from src.config.app_config import JWT_SECURE_KEY
+from src.config.app_config import app_settings
 from src.repositories import user_repository
 from src.db.session import open_session
 
-JWT_ALGORITHM = 'HS256'
-ACCESS_TOKEN_EXPIRES_IN_MINUTES = 30
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def create_access_token(data: dict) -> str:
     issue_date_time = datetime.now(timezone.utc)
-    expire_date_time = issue_date_time + timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN_MINUTES)
-    header = {'alg': JWT_ALGORITHM}
+    expire_date_time = issue_date_time + timedelta(minutes=app_settings.ACCESS_TOKEN_EXPIRES_IN_MINUTES)
+    header = {'alg': app_settings.JWT_ALGORITHM}
     payload = {**data, "iat": issue_date_time, "exp": expire_date_time}
-    return jwt.encode(header, payload, JWT_SECURE_KEY).decode('utf-8')
+    return jwt.encode(header, payload, app_settings.JWT_SECURE_KEY).decode('utf-8')
 
 '''
 Token
@@ -35,7 +34,7 @@ Token
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(open_session)) -> User:
     jwt_exception = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Could not validate credentials")
     try:
-        claims = jwt.decode(token, JWT_SECURE_KEY)
+        claims = jwt.decode(token, app_settings.JWT_SECURE_KEY)
         claims.validate()
         username = claims.get('sub')
         if not username:

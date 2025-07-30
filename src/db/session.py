@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
-from src.config.app_config import DATABASE_CONNECT_URL
+from src.config.app_config import app_settings
 
 engine = create_engine(
-    DATABASE_CONNECT_URL, connect_args={"autocommit": False}
+    app_settings.DATABASE_CONNECT_URL
 )
 
 def open_session():
